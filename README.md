@@ -43,5 +43,5 @@ fields.
 
 * `report.pdf` is a public KU Leuven document, included unchanged for demonstration.
 * `customer_table.jpg` was generated for this repo. Every name, address and zipcode is fictional;
-  the page was drawn, skewed by 0.4°, given sensor noise and saved as a JPEG, so there is no text
-  layer to cheat with.
+  the page was drawn, skewed by 0.10°, given sensor noise and saved as a JPEG, so there is no
+  text layer to cheat with. `tools/make_customer_table.py` regenerates it.
