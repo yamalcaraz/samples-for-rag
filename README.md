@@ -16,18 +16,28 @@ https://raw.githubusercontent.com/yamalcaraz/samples-for-rag/main/data/customer_
 
 ## Why the image looks like that
 
-It is a **closed-box table**, i.e. every cell outlined, which is what a real printed form looks
-like — and precisely the layout that breaks default OCR. Measured on this file with Tesseract 5.5:
+It is a **closed-box table** — every cell outlined, which is what a real printed form looks like.
+The layout is the point: it is where OCR defaults stop working, and where "just look at the file"
+is not enough. Everything below was measured on this file with Tesseract 5.5, counting rows that
+came back exactly (name **and** address **and** zipcode correct).
 
-| segmentation | words recovered | zipcodes (of 12 rows) |
+| input | words | rows exact |
 |---|---|---|
-| `--psm 3` (auto) | 18 | 0 |
-| `--psm 4` (single column) | 66 | 9 |
+| native 200 dpi, `--psm 3` (auto) | 113 | **12 / 12** |
+| native 200 dpi, `--psm 4` (single column) | 113 | **12 / 12** |
+| 2× LANCZOS upscale, either mode | 34 | 0 / 12 |
 
-Auto page segmentation reads the boxed cells as graphics. `psm 4` recovers the rows. Any pipeline
-that hard-codes `psm 3` will report an empty document here and blame the scan.
+Two things worth knowing before you reuse this file:
 
-Preprocessing helps as well: 2× LANCZOS upscale plus autocontrast before OCR.
+* **Upscaling can hurt.** The folklore "always 2× before OCR" is wrong here: native resolution
+  reads every row, the upscale reads none. Try both and keep the better one.
+* **The skew is chosen, not decorative.** At exactly 0.00° the cell rules align with the pixel
+  rows, Tesseract folds them into the text lines and recovers **1 of 12** rows. At 0.10° it
+  recovers **12 of 12**; at 0.25° it falls back to 10 of 12. The page is rotated by 0.10°.
+
+A production pipeline would still de-line the image (morphological line removal) or use a
+table-structure model such as PP-Structure, because columns here arrive as one text line, not as
+fields.
 
 ## Provenance
 

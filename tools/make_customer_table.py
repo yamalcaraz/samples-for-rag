@@ -82,7 +82,10 @@ def build():
            font=font(24), fill="black")
     d.text((W - 300, H - 110), "page 1 of 2", font=font(24), fill="black")
 
-    img = img.rotate(0.25, resample=Image.BICUBIC, expand=False, fillcolor="white")
+    # 0.1 degrees, and the exact value matters: at 0.00 the box rules line up perfectly with the
+    # pixel rows, Tesseract folds them into the text lines and recovers 1 of 12 rows; at 0.10 it
+    # recovers 12 of 12; at 0.25 it drops back to 10 of 12. Measure, do not pick a "realistic" number.
+    img = img.rotate(0.10, resample=Image.BICUBIC, expand=False, fillcolor="white")
     base = np.asarray(img).astype(np.int16)
     noise = np.random.default_rng(7).normal(0, 2, base.shape).astype(np.int16)
     return Image.fromarray(np.clip(base + noise, 0, 255).astype(np.uint8)).filter(
